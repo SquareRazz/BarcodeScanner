@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             x:Class="BarcodeScanner.MainPage">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height=".3*"></RowDefinition>
+            <RowDefinition Height=".1*"></RowDefinition>
+            <RowDefinition Height=".1*"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"></ColumnDefinition>
+            <ColumnDefinition Width="*"></ColumnDefinition>
+            <ColumnDefinition Width="*"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+
+        <Entry x:Name="EnteredBarcode"  TextChanged="EnteredBarcode_TextChanged" IsVisible="False" FontSize="30"  Text="" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3" HorizontalOptions="FillAndExpand" />
+        <Button Clicked="Search_Click" Text="Пошук" Grid.Row="3" Grid.Column="0" IsVisible="False" Grid.ColumnSpan="3" HorizontalOptions="Center" WidthRequest="200" BackgroundColor="Aquamarine"/>
+
+
+        <Label FontSize="Large" Text="Проскануйте товар" Grid.Row="0" Grid.Column="0" Margin="0,10,0,0" Grid.ColumnSpan="3" HorizontalTextAlignment="Center"/>
+        <Label x:Name="barcode" Text="Штрих-код: " Grid.Row="1" Grid.Column="0" Margin="5,0,0,0" Grid.ColumnSpan="3"/>
+        <Label x:Name="name" Text="Назва: " Grid.Row="2" Margin="5,0,0,0" Grid.Column="0" Grid.ColumnSpan="3"/>
+        <Label x:Name="price" Text="Ціна: " Grid.Row="3" Grid.Column="0" Margin="5,0,0,0" Grid.ColumnSpan="3"/>
+
+    </Grid>
+
+
+
+</ContentPage>
