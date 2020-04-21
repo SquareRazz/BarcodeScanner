@@ -30,6 +30,8 @@ namespace BarcodeScanner
             Label barcode = this.FindByName<Label>("barcode");
             Label name = this.FindByName<Label>("name");
             Label price = this.FindByName<Label>("price");
+            Label articul = this.FindByName<Label>("articul");
+            Label unit = this.FindByName<Label>("unit");
 
             entry.Focus();
 
@@ -39,12 +41,20 @@ namespace BarcodeScanner
             timer.Elapsed += OnTimedEvent;
             timer.AutoReset = true;
             timer.Enabled = true;
-
         }
 
         private void OnTimedEvent(Object source, ElapsedEventArgs e)
         {
             SetFocus();
+        }
+
+        private void ClearFields(Object source, ElapsedEventArgs e)
+        { 
+            name.Text = " ";
+            price.Text = " ";
+            articul.Text =  " ";
+            barcode.Text = " ";
+            unit.Text = " ";
         }
 
         public void SetFocus()
@@ -78,9 +88,25 @@ namespace BarcodeScanner
 
                     var deserialized = JsonConvert.DeserializeObject<PotamusProduct>(responseBody);
 
-                    barcode.Text = "Штрих-код: " + Code;
-                    name.Text = "Назва: " + deserialized.Name;
-                    price.Text = "Ціна: " + deserialized.Price + " ₴";
+                    barcode.Text = Code + " ";
+                    if (deserialized.Name.Length >= 26)
+                    {
+                        name.Text = deserialized.Name.Substring(0, 25) + "... ";
+                    }
+                    else
+                    {
+                        name.Text = deserialized.Name + " ";
+                    }
+                    price.Text = deserialized.Price + " ";
+                    articul.Text = deserialized.VendorCode + " ";
+                    unit.Text = deserialized.ED + ". ";
+
+                    var timerClearFields = new System.Timers.Timer();
+                    timerClearFields.Interval = 5000;
+
+                    timerClearFields.Elapsed += ClearFields;
+                    timerClearFields.AutoReset = false;
+                    timerClearFields.Enabled = true;
                 }
                 catch (HttpRequestException ex)
                 {
@@ -96,7 +122,6 @@ namespace BarcodeScanner
 
         public class PotamusProduct
         {
-            public string BarCode { get; set; }
 
             public string VendorCode { get; set; }
 
@@ -104,21 +129,7 @@ namespace BarcodeScanner
 
             public string Price { get; set; }
 
-            public string Emiter { get; set; }
-
-            public string Reference { get; set; }
-
-            public string Place { get; set; }
-
-            public string GoodId { get; set; }
-
             public string ED { get; set; }
-
-            public string Rest { get; set; }
-
-            public string Reserve { get; set; }
-
-            public string BonusQTY { get; set; }
         }
 
         private void EnteredBarcode_TextChanged(object sender, TextChangedEventArgs e)
@@ -130,82 +141,3 @@ namespace BarcodeScanner
         }
     }
 }
-
-
-//public static string connectionString = "Data Source=10.7.131.203;Initial Catalog=gladiator;Persist Security Info=True;User ID=mob_term;Password=54321";
-
-//private static DataTable ExecuteCommand(SqlCommand command, List<SqlParameter> parameters)
-//{
-//    DataTable queryData = new DataTable();
-
-//    try
-//    {
-//        SqlConnection connect = new SqlConnection(connectionString);
-//        SqlDataAdapter adapter = new SqlDataAdapter();
-//        SqlCommand sqlComand = command;
-//        sqlComand.CommandType = CommandType.StoredProcedure;
-//        sqlComand.Connection = connect;
-
-//        foreach (var parameter in parameters)
-//        {
-//            sqlComand.Parameters.Add(parameter);
-//        }
-
-//        adapter.SelectCommand = sqlComand;
-//        adapter.Fill(queryData);
-//        connect.Close();
-
-//    }
-//    catch { }
-
-
-//    return queryData;
-//}
-
-
-//// вызываем процедуру на сервере Potamus для получения информации о товаре по шкоду или артикулу
-//var sqlComand = new SqlCommand("dbo.I_CheckTovar");
-
-//var sqlParameters = new List<SqlParameter>();
-
-//sqlParameters.Add(new SqlParameter("@p_TovarID", Code));
-
-//if (Code.Trim().Length == 8)
-//{
-//    sqlParameters.Add(new SqlParameter("@pis_articul", "1"));
-//}
-//else
-//{
-//    sqlParameters.Add(new SqlParameter("@pis_articul", "0"));
-//}
-
-//var result = ExecuteCommand(sqlComand, sqlParameters);
-
-//if (result.Rows.Count > 0 && result.Rows[0][0].ToString() != "-1")
-//{
-//    // формирование товара
-//    PotamusProduct product = new PotamusProduct
-//    {
-//        BarCode = result.Rows[0]["barcode"].ToString(),
-//        VendorCode = result.Rows[0]["articul"].ToString(),
-//        Name = result.Rows[0]["name"].ToString(),
-//        Price = result.Rows[0]["sell_price_nds"].ToString(),
-//        Emiter = result.Rows[0]["producer"].ToString(),
-
-//        Reference = result.Rows[0]["reference"].ToString(),
-//        Place = result.Rows[0]["place"].ToString(),
-//        GoodId = result.Rows[0]["good_id"].ToString(),
-//        ED = result.Rows[0]["ed"].ToString(),
-//        Rest = result.Rows[0]["rest"].ToString(),
-//        Reserve = result.Rows[0]["reserve"].ToString(),
-//        BonusQTY = result.Rows[0]["bonus_qty"].ToString()
-//    };
-
-//    Label barcode = this.FindByName<Label>("barcode");
-//    Label name = this.FindByName<Label>("name");
-//    Label price = this.FindByName<Label>("price");
-
-//    barcode.Text = Code;
-//    name.Text = product.Name;
-//    price.Text = product.Price;
-//}
