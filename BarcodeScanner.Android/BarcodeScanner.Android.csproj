@@ -52,12 +52,13 @@
     <AndroidEnableProfiledAot>false</AndroidEnableProfiledAot>
     <BundleAssemblies>false</BundleAssemblies>
     <AndroidTlsProvider>legacy</AndroidTlsProvider>
-    <AndroidKeyStore>true</AndroidKeyStore>
+    <AndroidKeyStore>false</AndroidKeyStore>
     <AndroidSigningKeyStore>C:\Users\squarerazz\AppData\Local\Xamarin\Mono for Android\Keystore\Test\Test.keystore</AndroidSigningKeyStore>
     <AndroidSigningStorePass>111111</AndroidSigningStorePass>
     <AndroidSigningKeyAlias>Test</AndroidSigningKeyAlias>
     <AndroidSigningKeyPass>111111</AndroidSigningKeyPass>
     <AndroidLinkMode>None</AndroidLinkMode>
+    <MandroidI18n />
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Mono.Android" />
@@ -101,13 +102,17 @@
     <AndroidResource Include="Resources\mipmap-xxxhdpi\launcher_foreground.png" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Resources\drawable\" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\BarcodeScanner\BarcodeScanner.csproj">
       <Project>{CC0F0F8E-F63D-47AF-8FE8-A738A3B3492D}</Project>
       <Name>BarcodeScanner</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\pic.tif" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\background.jpg" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
 </Project>

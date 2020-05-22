@@ -7,7 +7,6 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
 using Xamarin.Forms;
@@ -15,31 +14,25 @@ using Xamarin.Forms;
 
 namespace BarcodeScanner
 {
+    
     // Learn more about making custom code visible in the Xamarin.Forms previewer
     // by visiting https://aka.ms/xamarinforms-previewer
     [DesignTimeVisible(false)]
     public partial class MainPage : ContentPage
     {
+        public Timer timer = new Timer();
+        public Timer timerFocus = new Timer();
+        string nameString = "";
+        string priceString = "";
+        string vendorCodeString = "";
+        string barCodeString = "";
+        string EDString = "";
+
         public static string Code { get; set; }
 
         protected override void OnAppearing()
         {
             base.OnAppearing();
-
-            Entry entry = this.FindByName<Entry>("EnteredBarcode");
-            Label barcode = this.FindByName<Label>("barcode");
-            Label name = this.FindByName<Label>("name");
-            Label price = this.FindByName<Label>("price");
-
-            entry.Focus();
-
-            var timer = new System.Timers.Timer();
-            timer.Interval = 3500;
-
-            timer.Elapsed += OnTimedEvent;
-            timer.AutoReset = true;
-            timer.Enabled = true;
-
         }
 
         private void OnTimedEvent(Object source, ElapsedEventArgs e)
@@ -47,52 +40,81 @@ namespace BarcodeScanner
             SetFocus();
         }
 
+        private void ClearFieldsEvent(Object source, ElapsedEventArgs e)
+        {
+            barcode.Text = "";
+            barcode2.Text = "";
+            name.Text = "";
+            price.Text = "";
+            articul.Text = "";
+            unit.Text = "";
+        }
+
         public void SetFocus()
         {
-            Entry entry = this.FindByName<Entry>("EnteredBarcode");
-
-            entry.Focus();
-
+            EnteredBarcode.Focus();
         }
 
         public MainPage()
         {
             InitializeComponent();
+
+            EnteredBarcode.Focus();
+
+            timer.Interval = 5000;
+            timer.Elapsed += ClearFieldsEvent;
+            timer.AutoReset = false;
+            timer.Enabled = true;
+
+            timerFocus = new Timer
+            {
+                Interval = 3500
+            };
+
+            timerFocus.Elapsed += OnTimedEvent;
+            timerFocus.AutoReset = true;
+            timerFocus.Enabled = true;
         }
 
         private async void Search_Click(object sender, EventArgs e)
         {
-            Code = this.EnteredBarcode.Text;
+            Code = EnteredBarcode.Text;
 
-            this.EnteredBarcode.Text = "";
+            EnteredBarcode.Text = "";
 
             using (HttpClient client = new HttpClient())
             {
-                try
-                {
                     HttpResponseMessage response = await client.GetAsync("http://10.7.110.4:81/PotamusProduct?article=" + Code);
-
-                    response.EnsureSuccessStatusCode();
 
                     string responseBody = await response.Content.ReadAsStringAsync();
 
                     var deserialized = JsonConvert.DeserializeObject<PotamusProduct>(responseBody);
 
-                    barcode.Text = "Штрих-код: " + Code;
-                    name.Text = "Назва: " + deserialized.Name;
-                    price.Text = "Ціна: " + deserialized.Price + " ₴";
-                }
-                catch (HttpRequestException ex)
-                {
-                    Console.WriteLine("\nException Caught!");
-                    Console.WriteLine("Message :{0} ", ex.Message);
-                }
+                    if(deserialized.Name.Length >= 26)
+                    {
+                        nameString = deserialized.Name.Substring(0, 25) + "... ";
+                    }
+                    else
+                    {
+                        nameString = deserialized.Name + " ";
+                    }
+                    priceString = deserialized.Price + " ";
+                    vendorCodeString = deserialized.VendorCode + " ";
+                    barCodeString = deserialized.BarCode;
+                    EDString = deserialized.ED + ". ";
             }
 
-            this.EnteredBarcode.Focus();
-        }
+            name.Text = nameString;
+            price.Text = priceString;
+            articul.Text = vendorCodeString;
+            barcode.Text = barCodeString;
+            barcode2.Text = barCodeString;
+            unit.Text = EDString;
 
-        
+            timer.Start();
+
+            EnteredBarcode.Focus();
+        }
 
         public class PotamusProduct
         {
